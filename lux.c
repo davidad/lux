@@ -68,18 +68,18 @@ int main(int argc, char **argv) {
     } else {
       set_instant(zwave,args.unit);
     }
-    zwave_dim(zwave,args.unit,0);
+    zwave_dim(zwave,args.unit,args.ramp_from);
     int i=0;
     struct timespec hw;
     mark(&hw);
     do {
       usleep(myfmod((args.period*(1-args.duty)-elapsed(hw)),args.period)*1e6);
       mark(&hw);
-      zwave_dim(zwave,args.unit,99);
+      zwave_dim(zwave,args.unit,args.ramp_to);
       if(i+1!=args.blink || args.end_off) {
         usleep(myfmod((args.period*(args.duty)-elapsed(hw)),args.period)*1e6);
         mark(&hw);
-        zwave_dim(zwave,args.unit,0);
+        zwave_dim(zwave,args.unit,args.ramp_from);
       }
       ++i;
     } while(i!=args.blink);
