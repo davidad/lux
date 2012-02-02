@@ -32,7 +32,7 @@ Options:
    -o, --blink-off           blink sequence ends off
    -y, --blink-fade          use the -x value to fade blinks
    -d, --blink-duty=<real>   blink duty cycle [default: 0.5]
-	 -u, --usb=<file>          specify USB device [default: /dev/ttyUSB0]
+   -u, --usb=<file>          specify USB device [default: /dev/ttyUSB0]
    -z, --unit=<int>          Z-Wave Unit number to control [default: 2]
    -v, --verbose             blabber
 
