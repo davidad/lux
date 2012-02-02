@@ -7,7 +7,7 @@
 #define ARGBOILER(ARG) \
   ARG(ARG_INT0,now,"n","now","level to dim to immediately (0--99)",-1) \
   ARG(ARG_DBL0,now_fade,"x","now-fade","upper bound on 'immediately'",0.2) \
-  ARG(ARG_DBL0,ramp_time,"r","ramp","number of seconds to smoothly ramp over",60.0) \
+  ARG(ARG_DBL0,ramp_time,"r","ramp","number of seconds to smoothly ramp over",300.0) \
   ARG(ARG_INT0,ramp_from,"f","from","level to ramp from (0--99)",0) \
   ARG(ARG_INT0,ramp_to,"t","to","level to ramp to (0--99)",99) \
   ARG(ARG_DBL0,ramp_ec,"c","ec","exponent correction parameter",1.0) \
@@ -16,7 +16,8 @@
   ARG(ARG_LIT0,end_off,"o","blink-off","blink sequence ends off",0) \
   ARG(ARG_LIT0,blink_fade,"y","blink-fade","use the -x value to fade blinks",0) \
   ARG(ARG_DBL0,duty,"d","blink-duty","blink duty cycle",0.5) \
-  ARG(ARG_INT0,unit,"u","unit","Z-Wave Unit number to control",2) \
+  ARG(ARG_FIL0,dev_fname,"u","usb","specify USB device","/dev/ttyUSB0") \
+  ARG(ARG_INT0,unit,"z","unit","Z-Wave Unit number to control",2) \
   ARG(ARG_LIT0,verbose,"v","verbose","blabber",0) \
 //ARG(ARG_DBL0,ramp_steps,"s","steps","max steps per second",5) \
 
@@ -34,19 +35,19 @@ double elapsed(struct timespec s_t) {
 
 void set_xfade(int zwave, unsigned char unit, double x) {
   double step_size = 0.99/x;
-  unsigned char param7;
-  if(step_size<1.0) param7=1;
-  else if(step_size>99.0) param7=99;
-  else param7=(unsigned char)(0.5+step_size);
-  double step_time = param7*x/99.0;
-  unsigned char param8 = (unsigned char)( 100*step_time +0.5 );
-  zwave_param(zwave,unit,7,param7);
-  zwave_param(zwave,unit,8,param8);
+  unsigned char jump_size;
+  if(step_size<1.0) jump_size=1;
+  else if(step_size>99.0) jump_size=99;
+  else jump_size=(unsigned char)(0.5+step_size);
+  double step_time = jump_size*x/99.0;
+  unsigned char jump_length = (unsigned char)( 100*step_time +0.5 );
+  zwave_param(zwave,unit,GE_45602_FADE_JUMP_SIZE,jump_size);
+  zwave_param(zwave,unit,GE_45602_FADE_JUMP_LENGTH,jump_length);
 }
 
 void set_instant(int zwave, unsigned char unit) {
-  zwave_param(zwave,unit,7,99);
-  zwave_param(zwave,unit,8,1);
+  zwave_param(zwave,unit,GE_45602_FADE_JUMP_SIZE,99);
+  zwave_param(zwave,unit,GE_45602_FADE_JUMP_LENGTH,1);
 }
 
 inline double myfmod(double x, double y) {
@@ -58,7 +59,7 @@ inline double myfmod(double x, double y) {
 int main(int argc, char **argv) {
   args_t args;
   parse_args(argc,argv,&args);
-  int zwave=zwave_open("/dev/ttyUSB0");
+  int zwave=zwave_open(args.dev_fname);
   if(args.now>=0 && args.now<=99) {
     set_xfade(zwave,args.unit,args.now_fade);
     zwave_dim(zwave,args.unit,args.now);
@@ -88,8 +89,8 @@ int main(int argc, char **argv) {
     zwave_dim(zwave,args.unit,args.ramp_from);
 
     double levels_per_s = abs(args.ramp_to - args.ramp_from) / args.ramp_time;
-    unsigned char param8 = 1;
-    zwave_param(zwave,args.unit,7,1);
+    unsigned char jump_length = 1;
+    zwave_param(zwave,args.unit,GE_45602_FADE_JUMP_SIZE,1);
 
     struct timespec start_time,cmd_slot;
     mark(&start_time);
@@ -107,11 +108,11 @@ int main(int argc, char **argv) {
         double cc=args.ramp_ec;
         current_level=-cc+exp(x*log((double)args.ramp_to+cc)+(1-x)*log((double)args.ramp_from+cc));
         levels_per_s = (current_level+cc)*(log((double)args.ramp_to+cc)-log((double)args.ramp_from+cc));
-        unsigned char new_param8 = (unsigned char)( (100/levels_per_s) +0.5);
-        new_param8=new_param8?new_param8:1;
-        if(new_param8!=param8) {
-          param8=new_param8;
-          zwave_param(zwave,args.unit,8,param8);
+        unsigned char new_jump_length = (unsigned char)( (100/levels_per_s) +0.5);
+        new_jump_length=new_jump_length?new_jump_length:1;
+        if(new_jump_length!=jump_length) {
+          jump_length=new_jump_length;
+          zwave_param(zwave,args.unit,GE_45602_FADE_JUMP_LENGTH,jump_length);
         }
         current_uc=(unsigned char)(current_level+0.5);
         if(current_uc==prev_level) usleep(1000);

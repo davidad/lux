@@ -1,13 +1,13 @@
 #include "zwave.h"
 
-int zwave_open(char* fname) {
+int zwave_open(const char* fname) {
   char stty_cmd[4096];
   snprintf(stty_cmd,sizeof(stty_cmd),"stty -F %s 115200 cs8 -cstopb -parenb -crtscts -echo -icanon -isig -iexten -icrnl -imaxbel -brkint ignbrk line 0 min 0 time 0",fname);
   system(stty_cmd);
   return open(fname,O_RDWR|O_NOCTTY|O_NONBLOCK);
 }
 
-int zwave_send(int dev, unsigned char* command, unsigned char length) {
+int zwave_send(int dev, const unsigned char* command, unsigned char length) {
   unsigned char bytes[length+3];
   bytes[0]=0x1;
   bytes[1]=length+1;
@@ -24,7 +24,7 @@ int zwave_send(int dev, unsigned char* command, unsigned char length) {
   return rc;
 }
 
-int zwave_send_retry(int dev, unsigned char* command, unsigned char length) {
+int zwave_send_retry(int dev, const unsigned char* command, unsigned char length) {
   int tries = 8;
   do { 
     if(tries<8) usleep(80000);
@@ -64,11 +64,17 @@ int zwave_listen(int dev) {
 }
 
 int zwave_param(int dev, unsigned char unit, unsigned char param, unsigned char value) {
-  unsigned char command[] = {0x0, 0x13, unit, 0x5, 0x70, 0x4, param, 0x1, value, 0x5};
+  unsigned char command[] =
+    {0x0, ZWAVE_SEND_DATA, unit, 5,
+          ZWAVE_CONFIG_CLASS, ZWAVE_CONFIG_SET, param, ZWAVE_CONFIG_ONE_BYTE_VALUE, value,
+          ZWAVE_ROUTE_ACK};
   return zwave_send_retry(dev,command,sizeof(command));
 }
 
 int zwave_dim(int dev, unsigned char unit, unsigned char level) {
-  unsigned char command[] = {0x0, 0x13, unit, 0x3, 0x20, 0x1, level, 0x5};
+  unsigned char command[] =
+    {0x0, ZWAVE_SEND_DATA, unit, 3,
+          ZWAVE_BASIC_CLASS, ZWAVE_BASIC_SET, level,
+          ZWAVE_ROUTE_ACK};
   return zwave_send_retry(dev,command,sizeof(command));
 }

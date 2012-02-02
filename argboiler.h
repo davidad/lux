@@ -16,7 +16,7 @@
 #define ARG_INIT(type,id,shrt,lng,desc,def) ARG_INIT_(type,id,shrt,lng,desc,def,type##_DEF(def))
 
 #define ARG_FIL0 const char*,str,"<file>",0,sval[0]
-#define ARG_FIL0_DEF(d) ""
+#define ARG_FIL0_DEF(d) " [default: " d "]"
 #define ARG_FIL1 const char*,str,"<file>",1,sval[0]
 #define ARG_FIL1_DEF(d) ""
 #define ARG_STR0 const char*,str,"<string>",0,sval[0]
