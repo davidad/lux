@@ -4,17 +4,17 @@ Usage:
    lux --blink <n> [options]
 
 Options:
-	-n, --now=<int>           level to dim to immediately (0--99) [default: -1]
-	-x, --now-fade=<real>     upper bound on 'immediately' [default: 0.2]
-	-r, --ramp=<real>         number of seconds to smoothly ramp over [default: 60.0]
-	-f, --from=<int>          level to ramp from (0--99) [default: 0]
-	-t, --to=<int>            level to ramp to (0--99) [default: 99]
-	-c, --ec=<real>           exponent correction parameter [default: 1.0]
-	-b, --blink=<int>         number of blinks (0 for indefinite) [default: -1]
-	-p, --blink-period=<real> blink period (seconds) [default: 1.0]
-	-o, --blink-off           blink sequence ends off
-	-y, --blink-fade          use the -x value to fade blinks
-	-d, --blink-duty=<real>   blink duty cycle [default: 0.5]
-	-u, --unit=<int>          Z-Wave Unit number to control [default: 2]
-	-v, --verbose             blabber
+  -n, --now=<int>           level to dim to immediately (0--99) [default: -1]
+  -x, --now-fade=<real>     upper bound on 'immediately' [default: 0.2]
+  -r, --ramp=<real>         number of seconds to smoothly ramp over [default: 60.0]
+  -f, --from=<int>          level to ramp from (0--99) [default: 0]
+  -t, --to=<int>            level to ramp to (0--99) [default: 99]
+  -c, --ec=<real>           exponent correction parameter [default: 1.0]
+  -b, --blink=<int>         number of blinks (0 for indefinite) [default: -1]
+  -p, --blink-period=<real> blink period (seconds) [default: 1.0]
+  -o, --blink-off           blink sequence ends off
+  -y, --blink-fade          use the -x value to fade blinks
+  -d, --blink-duty=<real>   blink duty cycle [default: 0.5]
+  -u, --unit=<int>          Z-Wave Unit number to control [default: 2]
+  -v, --verbose             blabber
 
