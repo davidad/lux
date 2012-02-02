@@ -49,10 +49,12 @@ int zwave_listen(int dev) {
     if(rc>0) n+=rc;
   } while (rc>0);
   int i;
+#ifdef DEBUG
   for(i=0;i<n;i++) {
-    //printf("%hhX ",response[i]);
+    printf("%hhX ",response[i]);
   }
-  //printf("\n");
+  printf("\n");
+#endif
   for(i=0;i<n;i++) {
     if(response[0]==0x1 || response[1]==0x1) {
       char ack[] = {0x6};

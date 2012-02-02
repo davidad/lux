@@ -19,7 +19,6 @@
   ARG(ARG_FIL0,dev_fname,"u","usb","specify USB device","/dev/ttyUSB0") \
   ARG(ARG_INT0,unit,"z","unit","Z-Wave Unit number to control",2) \
   ARG(ARG_LIT0,verbose,"v","verbose","blabber",0) \
-//ARG(ARG_DBL0,ramp_steps,"s","steps","max steps per second",5) \
 
 #include "argboiler.h"
 
@@ -97,7 +96,6 @@ int main(int argc, char **argv) {
     unsigned char current_uc=args.ramp_from;
     double current_level=(double)current_uc;
     unsigned char prev_level=254;
-    //double slot_length = 1.0/args.ramp_steps;
     int i=0;
     while(current_uc != args.ramp_to) {
       double t,x;
@@ -121,7 +119,7 @@ int main(int argc, char **argv) {
       mark(&cmd_slot);
 
       if(args.verbose) {
-        printf("Step %d: t=%lfs, x=%lf/1.0, current level=%lf/99.0 (%hhd/99)\n",i,t,x,current_level,current_uc);
+        printf("Step %d: t=%lfs, x=%lf/1.0, current level=%lf/99.0 (%hhd/99)\n",i++,t,x,current_level,current_uc);
       }
 
       zwave_dim(zwave,args.unit,current_uc);
@@ -130,10 +128,6 @@ int main(int argc, char **argv) {
       if(args.verbose) {
         printf("  Command took %lfs\n",cmd_t);
       }
-
-      //if(slot_remaining>0) usleep(slot_remaining*1e6);
-
-      i++;
     }
   }
   zwave_close(zwave);
