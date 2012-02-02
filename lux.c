@@ -7,11 +7,11 @@
 #define ARGBOILER(ARG) \
   ARG(ARG_INT0,now,"n","now","level to dim to immediately (0--99)",-1) \
   ARG(ARG_DBL0,now_fade,"x","now-fade","upper bound on 'immediately'",0.2) \
-  ARG(ARG_DBL0,ramp_time,"r","time","number of seconds to smoothly ramp over",60.0) \
+  ARG(ARG_DBL0,ramp_time,"r","ramp","number of seconds to smoothly ramp over",60.0) \
   ARG(ARG_INT0,ramp_from,"f","from","level to ramp from (0--99)",0) \
   ARG(ARG_INT0,ramp_to,"t","to","level to ramp to (0--99)",99) \
   ARG(ARG_DBL0,ramp_ec,"c","ec","exponent correction parameter",1.0) \
-  ARG(ARG_INT0,blink,"b","blinks","number of blinks (0 for indefinite)",-1) \
+  ARG(ARG_INT0,blink,"b","blink","number of blinks (0 for indefinite)",-1) \
   ARG(ARG_DBL0,period,"p","blink-period","blink period (seconds)",1.0) \
   ARG(ARG_LIT0,end_off,"o","blink-off","blink sequence ends off",0) \
   ARG(ARG_LIT0,blink_fade,"y","blink-fade","use the -x value to fade blinks",0) \
