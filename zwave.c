@@ -80,3 +80,11 @@ int zwave_dim(int dev, unsigned char unit, unsigned char level) {
           ZWAVE_ROUTE_ACK};
   return zwave_send_retry(dev,command,sizeof(command));
 }
+
+int zwave_on(int dev, unsigned char unit) {
+  zwave_dim(dev,unit,0xff);
+}
+
+int zwave_off(int dev, unsigned char unit) {
+  zwave_dim(dev,unit,0x00);
+}

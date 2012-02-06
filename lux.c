@@ -18,6 +18,8 @@
   ARG(ARG_DBL0,duty,"d","blink-duty","blink duty cycle",0.5) \
   ARG(ARG_FIL0,dev_fname,"u","usb","specify USB device","/dev/ttyUSB0") \
   ARG(ARG_INT0,unit,"z","unit","Z-Wave Unit number to control",2) \
+  ARG(ARG_LIT0,on,"1","on","Turn on switch",0) \
+  ARG(ARG_LIT0,off,"0","off","Turn off switch",0) \
   ARG(ARG_LIT0,verbose,"v","verbose","blabber",0) \
 
 #include "argboiler.h"
@@ -59,12 +61,17 @@ int main(int argc, char **argv) {
   args_t args;
   parse_args(argc,argv,&args);
   int zwave=zwave_open(args.dev_fname);
-  if(args.now>=0 && args.now<=99) {
+  if(args.on) {
+    zwave_on(zwave,args.unit);
+  } else if (args.off) {
+    zwave_off(zwave,args.unit);
+  } else if(args.now>=0 && args.now<=99) {
     set_xfade(zwave,args.unit,args.now_fade);
     zwave_dim(zwave,args.unit,args.now);
   } else if(args.blink>=0) {
     if(args.blink_fade) {
-      set_xfade(zwave,args.unit,args.now_fade);
+      double x = args.now_fade*(99/(double)(args.ramp_to-args.ramp_from));
+      set_xfade(zwave,args.unit,x);
     } else {
       set_instant(zwave,args.unit);
     }
